@@ -12,7 +12,10 @@
     body { /* Стили для всей страницы */
       margin: 0; /* Убираем стандартный белый отступ по краям */
       font-family: "Segoe UI", Arial, sans-serif; /* Шрифт: если первого нет на компьютере, берётся следующий */
-      background: linear-gradient(135deg, #667eea, #764ba2); /* Фон - плавный переход от синего к фиолетовому */
+      background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #4facfe); /* Фон - переход между четырьмя цветами */
+      background-size: 400% 400%; /* Делаем фон в 4 раза больше окна, чтобы было что "двигать" */
+      animation: gradientMove 15s ease infinite; /* Запускаем анимацию gradientMove: 15 секунд, плавно, бесконечно */
+      overflow-x: hidden; /* Прячем всё, что выходит за края экрана по бокам */
       min-height: 100vh; /* Фон занимает минимум всю высоту окна (100vh = 100% высоты экрана) */
       padding: 30px 15px; /* Отступы сверху/снизу 30px и по бокам 15px */
     } /* Конец стилей body */
@@ -24,6 +27,8 @@
       padding: 30px; /* Внутренний отступ от края карточки до полей */
       border-radius: 16px; /* Скруглённые углы */
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* Тень под карточкой, чтобы она "парила" */
+      position: relative; /* Нужно, чтобы работал z-index (слой) */
+      z-index: 1; /* Карточка лежит выше пузырей, пузыри остаются позади */
     } /* Конец стилей form */
 
     h1 { /* Стили для заголовка */
@@ -87,9 +92,39 @@
     input[type="reset"] { background: #e8e8f0; color: #333; } /* Кнопка "Очистить": светло-серая, чтобы не отвлекала */
     input[type="submit"]:hover, input[type="reset"]:hover { opacity: 0.85; } /* :hover - когда навели мышь, кнопка чуть светлеет */
 
+    @keyframes gradientMove { /* @keyframes - описание анимации по шагам */
+      0% { background-position: 0% 50%; } /* В начале показываем левую часть большого фона */
+      50% { background-position: 100% 50%; } /* На середине сдвигаем фон вправо */
+      100% { background-position: 0% 50%; } /* В конце возвращаем обратно, и всё повторяется */
+    } /* Конец анимации градиента */
+
+    .bubbles span { /* Стили для каждого пузыря (span внутри блока .bubbles) */
+      position: fixed; /* Пузырь закреплён относительно окна и не прокручивается */
+      bottom: -150px; /* Стартует ниже экрана, поэтому сначала не виден */
+      background: rgba(255, 255, 255, 0.2); /* Белый цвет, прозрачность 20% */
+      border-radius: 50%; /* 50% скругления превращает квадрат в круг */
+      animation: floatUp 12s linear infinite; /* Запускаем анимацию floatUp: 12 секунд, равномерно, бесконечно */
+    } /* Конец общих стилей пузырей */
+
+    .bubbles span:nth-child(1) { left: 10%; width: 60px; height: 60px; animation-delay: 0s; } /* 1-й пузырь: слева 10%, размер 60px, стартует сразу */
+    .bubbles span:nth-child(2) { left: 25%; width: 100px; height: 100px; animation-delay: 3s; } /* 2-й пузырь: побольше, стартует через 3 секунды */
+    .bubbles span:nth-child(3) { left: 45%; width: 40px; height: 40px; animation-delay: 6s; } /* 3-й пузырь: маленький, через 6 секунд */
+    .bubbles span:nth-child(4) { left: 65%; width: 80px; height: 80px; animation-delay: 2s; } /* 4-й пузырь: средний, через 2 секунды */
+    .bubbles span:nth-child(5) { left: 80%; width: 120px; height: 120px; animation-delay: 5s; } /* 5-й пузырь: самый большой, через 5 секунд */
+    .bubbles span:nth-child(6) { left: 92%; width: 50px; height: 50px; animation-delay: 8s; } /* 6-й пузырь: маленький, через 8 секунд */
+
+    @keyframes floatUp { /* Анимация подъёма пузыря */
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; } /* В начале: пузырь внизу, видимый */
+      100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; } /* В конце: поднялся выше экрана, повернулся и растаял */
+    } /* Конец анимации пузырей */
+
   </style> <!-- Конец CSS -->
 </head> <!-- Конец "головы" -->
 <body> <!-- "Тело" страницы: всё, что видит пользователь -->
+
+  <div class="bubbles"> <!-- Блок с пузырями для анимации фона -->
+    <span></span><span></span><span></span><span></span><span></span><span></span> <!-- 6 пустых элементов - каждый станет кругом благодаря CSS -->
+  </div> <!-- Конец блока пузырей -->
 
   <form action="/submit" method="post"> <!-- form - контейнер для всех полей. action - куда отправить данные (файл-обработчик на сервере). method="post" - способ отправки: данные идут скрытно, не в адресной строке -->
 
