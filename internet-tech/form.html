@@ -1,0 +1,233 @@
+<!DOCTYPE html> <!-- Говорим браузеру: это современная HTML-страница (HTML5) -->
+<html lang="ru"> <!-- Начало страницы. lang="ru" - язык страницы русский -->
+<head> <!-- "Голова" страницы: служебная информация, её не видно на экране -->
+  <meta charset="UTF-8"> <!-- Кодировка UTF-8, чтобы русские буквы не превратились в кракозябры -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Чтобы страница нормально выглядела на телефоне -->
+  <title>Регистрационная форма</title> <!-- Заголовок, который виден на вкладке браузера -->
+
+  <style> /* Начало CSS - языка оформления. HTML отвечает за "что на странице", CSS - за "как это выглядит" */
+
+    * { box-sizing: border-box; } /* * - все элементы. border-box: ширина считается вместе с рамкой и отступами, так проще верстать */
+
+    body { /* Стили для всей страницы */
+      margin: 0; /* Убираем стандартный белый отступ по краям */
+      font-family: "Segoe UI", Arial, sans-serif; /* Шрифт: если первого нет на компьютере, берётся следующий */
+      background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #4facfe); /* Фон - переход между четырьмя цветами */
+      background-size: 400% 400%; /* Делаем фон в 4 раза больше окна, чтобы было что "двигать" */
+      animation: gradientMove 15s ease infinite; /* Запускаем анимацию gradientMove: 15 секунд, плавно, бесконечно */
+      overflow-x: hidden; /* Прячем всё, что выходит за края экрана по бокам */
+      min-height: 100vh; /* Фон занимает минимум всю высоту окна (100vh = 100% высоты экрана) */
+      padding: 30px 15px; /* Отступы сверху/снизу 30px и по бокам 15px */
+    } /* Конец стилей body */
+
+    form { /* Стили для самой формы - делаем из неё белую карточку */
+      max-width: 620px; /* Карточка не шире 620 пикселей */
+      margin: 0 auto; /* Отступы по бокам "авто" - карточка встаёт по центру */
+      background: #ffffff; /* Белый фон карточки */
+      padding: 30px; /* Внутренний отступ от края карточки до полей */
+      border-radius: 16px; /* Скруглённые углы */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* Тень под карточкой, чтобы она "парила" */
+      position: relative; /* Нужно, чтобы работал z-index (слой) */
+      z-index: 1; /* Карточка лежит выше пузырей, пузыри остаются позади */
+    } /* Конец стилей form */
+
+    h1 { /* Стили для заголовка */
+      text-align: center; /* Текст по центру */
+      color: #4a3f8f; /* Тёмно-фиолетовый цвет текста */
+      margin-top: 0; /* Убираем отступ сверху */
+    } /* Конец стилей h1 */
+
+    .field { margin-bottom: 18px; } /* Класс field - блок одного поля. Отступ снизу, чтобы поля не слипались */
+
+    label { /* Стили для подписей */
+      display: block; /* Подпись занимает всю строку, поле оказывается под ней */
+      font-weight: 600; /* Полужирный текст */
+      color: #333; /* Тёмно-серый цвет */
+      margin-bottom: 6px; /* Небольшой отступ между подписью и полем */
+    } /* Конец стилей label */
+
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"], input[type="email"], input[type="file"], select { /* Выбираем все обычные поля ввода и выпадающий список */
+      width: 100%; /* Поле на всю ширину карточки */
+      padding: 10px 12px; /* Внутренний отступ, чтобы текст не прилипал к рамке */
+      border: 2px solid #ddd; /* Серая рамка 2 пикселя */
+      border-radius: 8px; /* Скруглённые углы поля */
+      font-size: 16px; /* Размер шрифта внутри поля */
+      transition: border-color 0.2s; /* Рамка меняет цвет плавно, за 0.2 секунды */
+    } /* Конец стилей полей */
+
+    input:focus, select:focus { /* :focus - когда поле выбрано (в нём мигает курсор) */
+      outline: none; /* Убираем стандартную синюю обводку браузера */
+      border-color: #667eea; /* Рамка становится фиолетово-синей */
+    } /* Конец стилей фокуса */
+
+    input[type="color"] { /* Стили для палитры цвета */
+      width: 70px; /* Ширина квадратика с цветом */
+      height: 40px; /* Высота квадратика с цветом */
+      border: none; /* Без рамки */
+      cursor: pointer; /* Курсор-"рука" при наведении */
+    } /* Конец стилей палитры */
+
+    .options label { /* Подписи внутри блока .options (radio и галочки) */
+      display: inline; /* Подпись в одну строку с кружком или галочкой */
+      font-weight: normal; /* Обычный, не жирный шрифт */
+      margin-right: 14px; /* Отступ справа, чтобы варианты не слипались */
+    } /* Конец стилей подписей вариантов */
+
+    .group-title { font-weight: 600; margin-bottom: 6px; color: #333; } /* Заголовок группы вариантов (Пол, Что вас интересует): жирный, с отступом снизу */
+
+    .buttons { display: flex; gap: 12px; margin-top: 25px; } /* Блок кнопок: flex ставит кнопки в ряд, gap - расстояние между ними */
+
+    input[type="submit"], input[type="reset"] { /* Выбираем обе кнопки */
+      flex: 1; /* Кнопки делят ширину поровну */
+      padding: 12px; /* Внутренний отступ - кнопки получаются крупными */
+      border: none; /* Без рамки */
+      border-radius: 8px; /* Скруглённые углы */
+      font-size: 16px; /* Размер шрифта */
+      font-weight: 600; /* Полужирный текст */
+      cursor: pointer; /* Курсор-"рука" при наведении */
+      transition: opacity 0.2s; /* Плавное изменение прозрачности */
+    } /* Конец общих стилей кнопок */
+
+    input[type="submit"] { background: #667eea; color: #fff; } /* Кнопка "Отправить": фиолетово-синяя с белым текстом */
+    input[type="reset"] { background: #e8e8f0; color: #333; } /* Кнопка "Очистить": светло-серая, чтобы не отвлекала */
+    input[type="submit"]:hover, input[type="reset"]:hover { opacity: 0.85; } /* :hover - когда навели мышь, кнопка чуть светлеет */
+
+    @keyframes gradientMove { /* @keyframes - описание анимации по шагам */
+      0% { background-position: 0% 50%; } /* В начале показываем левую часть большого фона */
+      50% { background-position: 100% 50%; } /* На середине сдвигаем фон вправо */
+      100% { background-position: 0% 50%; } /* В конце возвращаем обратно, и всё повторяется */
+    } /* Конец анимации градиента */
+
+    .bubbles span { /* Стили для каждого пузыря (span внутри блока .bubbles) */
+      position: fixed; /* Пузырь закреплён относительно окна и не прокручивается */
+      bottom: -150px; /* Стартует ниже экрана, поэтому сначала не виден */
+      background: rgba(255, 255, 255, 0.2); /* Белый цвет, прозрачность 20% */
+      border-radius: 50%; /* 50% скругления превращает квадрат в круг */
+      animation: floatUp 12s linear infinite; /* Запускаем анимацию floatUp: 12 секунд, равномерно, бесконечно */
+    } /* Конец общих стилей пузырей */
+
+    .bubbles span:nth-child(1) { left: 10%; width: 60px; height: 60px; animation-delay: 0s; } /* 1-й пузырь: слева 10%, размер 60px, стартует сразу */
+    .bubbles span:nth-child(2) { left: 25%; width: 100px; height: 100px; animation-delay: 3s; } /* 2-й пузырь: побольше, стартует через 3 секунды */
+    .bubbles span:nth-child(3) { left: 45%; width: 40px; height: 40px; animation-delay: 6s; } /* 3-й пузырь: маленький, через 6 секунд */
+    .bubbles span:nth-child(4) { left: 65%; width: 80px; height: 80px; animation-delay: 2s; } /* 4-й пузырь: средний, через 2 секунды */
+    .bubbles span:nth-child(5) { left: 80%; width: 120px; height: 120px; animation-delay: 5s; } /* 5-й пузырь: самый большой, через 5 секунд */
+    .bubbles span:nth-child(6) { left: 92%; width: 50px; height: 50px; animation-delay: 8s; } /* 6-й пузырь: маленький, через 8 секунд */
+
+    @keyframes floatUp { /* Анимация подъёма пузыря */
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; } /* В начале: пузырь внизу, видимый */
+      100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; } /* В конце: поднялся выше экрана, повернулся и растаял */
+    } /* Конец анимации пузырей */
+
+  </style> <!-- Конец CSS -->
+</head> <!-- Конец "головы" -->
+<body> <!-- "Тело" страницы: всё, что видит пользователь -->
+
+  <div class="bubbles"> <!-- Блок с пузырями для анимации фона -->
+    <span></span><span></span><span></span><span></span><span></span><span></span> <!-- 6 пустых элементов - каждый станет кругом благодаря CSS -->
+  </div> <!-- Конец блока пузырей -->
+
+  <form action="/submit" method="post"> <!-- form - контейнер для всех полей. action - куда отправить данные (файл-обработчик на сервере). method="post" - способ отправки: данные идут скрытно, не в адресной строке -->
+
+    <h1>Регистрационная форма</h1> <!-- Большой заголовок карточки -->
+
+    <div class="field"> <!-- div - просто коробка для группировки. class="field" подключает к ней стиль .field из CSS -->
+      <label for="surname">Фамилия*</label> <!-- label - подпись к полю. for="surname" связывает её с полем с таким же id: клик по подписи ставит курсор в поле -->
+      <input type="text" id="surname" name="surname" placeholder="Иванов" required> <!-- 1. input - поле ввода. type="text" - обычный текст. id - "паспорт" поля для label. name - имя, под которым данные уйдут на сервер. placeholder - серая подсказка внутри. required - поле обязательное (звёздочка) -->
+    </div> <!-- Конец блока поля -->
+
+    <div class="field"> <!-- Блок поля "Имя" -->
+      <label for="name">Имя*</label> <!-- Подпись к полю "Имя" -->
+      <input type="text" id="name" name="name" placeholder="Иван" required> <!-- 2. Обычное текстовое обязательное поле -->
+    </div>
+
+    <div class="field"> <!-- Блок поля "Отчество" -->
+      <label for="patronymic">Отчество</label> <!-- Подпись. Звёздочки нет, значит поле необязательное -->
+      <input type="text" id="patronymic" name="patronymic" placeholder="Иванович"> <!-- 3. Текстовое поле БЕЗ required - можно оставить пустым -->
+    </div>
+
+    <div class="field options"> <!-- Блок для пола. Класс options даёт стиль подписям вариантов в одну строку -->
+      <div class="group-title">Пол*</div> <!-- Общий заголовок для группы кнопок -->
+      <input type="radio" id="male" name="gender" value="male" required> <!-- 4. radio - кнопка выбора ОДНОГО варианта. Одинаковый name="gender" объединяет кнопки в группу - выбрать можно только одну. value - что уйдёт на сервер -->
+      <label for="male">мужской</label> <!-- Подпись к первой кнопке -->
+      <input type="radio" id="female" name="gender" value="female"> <!-- Вторая кнопка той же группы (name такой же, value другой) -->
+      <label for="female">женский</label> <!-- Подпись ко второй кнопке -->
+    </div>
+
+    <div class="field"> <!-- Блок цвета глаз -->
+      <label for="eyes">Цвет глаз</label> <!-- Подпись к палитре -->
+      <input type="color" id="eyes" name="eyes"> <!-- 5. type="color" - открывает палитру, из которой выбираем цвет -->
+    </div>
+
+    <div class="field"> <!-- Блок даты рождения -->
+      <label for="birth">Дата рождения*</label> <!-- Подпись -->
+      <input type="date" id="birth" name="birth" min="1900-01-01" max="2026-12-31" required> <!-- 6. type="date" - выбор даты в календаре. min и max - самая ранняя и самая поздняя допустимые даты. Формат гггг-мм-дд -->
+    </div>
+
+    <div class="field"> <!-- Блок возраста -->
+      <label for="age">Возраст (от 18 до 100)</label> <!-- Подпись -->
+      <input type="number" id="age" name="age" min="18" max="100" value="18"> <!-- 7. type="number" - только цифры, появляются стрелочки. min=18 и max=100 - ограничивают диапазон. value="18" - значение по умолчанию -->
+    </div>
+
+    <div class="field"> <!-- Блок места проживания -->
+      <label for="city">Место проживания*</label> <!-- Подпись -->
+      <select id="city" name="city" required> <!-- 8. select - выпадающий список. required - выбрать обязательно -->
+        <option value="">Выберите город</option> <!-- option - один пункт списка. Пустое value значит "ничего не выбрано", поэтому required не даст отправить -->
+        <option value="moscow">Москва</option> <!-- Пункт: на экране "Москва", на сервер уйдёт "moscow" -->
+        <option value="spb">Санкт-Петербург</option> <!-- Пункт списка -->
+        <option value="kazan">Казань</option> <!-- Пункт списка -->
+      </select> <!-- Конец выпадающего списка -->
+    </div>
+
+    <div class="field"> <!-- Блок индекса -->
+      <label for="zip">Индекс*</label> <!-- Подпись -->
+      <input type="text" id="zip" name="zip" pattern="[0-9]{6}" maxlength="6" placeholder="123456" required> <!-- 9. pattern - шаблон проверки (регулярное выражение): ровно 6 цифр. Если ввели не так - форма не отправится и покажет ошибку. maxlength - не больше 6 символов -->
+    </div>
+
+    <div class="field"> <!-- Блок адреса -->
+      <label for="address">Домашний адрес*</label> <!-- Подпись -->
+      <input type="text" id="address" name="address" placeholder="ул. Ленина, д. 1, кв. 1" required> <!-- 10. Обычное обязательное текстовое поле -->
+    </div>
+
+    <div class="field"> <!-- Блок даты регистрации -->
+      <label for="regdate">Дата регистрации*</label> <!-- Подпись -->
+      <input type="date" id="regdate" name="regdate" required> <!-- 11. Снова type="date" - дата выбирается из календаря -->
+    </div>
+
+    <div class="field"> <!-- Блок телефона -->
+      <label for="phone">Номер телефона*</label> <!-- Подпись -->
+      <input type="tel" id="phone" name="phone" pattern="\+7[0-9]{10}" placeholder="+79991234567" required> <!-- 12. type="tel" - поле для телефона (на смартфоне откроется цифровая клавиатура). pattern: плюс, семёрка и ещё 10 цифр -->
+    </div>
+
+    <div class="field"> <!-- Блок почты -->
+      <label for="email">Почта*</label> <!-- Подпись -->
+      <input type="email" id="email" name="email" placeholder="name@mail.ru" required> <!-- 13. type="email" - браузер сам проверяет, что есть символ @ и текст после него -->
+    </div>
+
+    <div class="field"> <!-- Блок фотографии -->
+      <label for="photo">Фотография*</label> <!-- Подпись -->
+      <input type="file" id="photo" name="photo" accept="image/*" required> <!-- 14. type="file" - выбор файла с компьютера. accept="image/*" - принимать только картинки -->
+    </div>
+
+    <div class="field options"> <!-- Блок вопроса с несколькими ответами -->
+      <div class="group-title">Что вас интересует?</div> <!-- Сам вопрос -->
+      <input type="checkbox" id="q1" name="interest" value="web"> <!-- 15. checkbox - галочка. Можно выбрать несколько. Одинаковый name="interest" - это один вопрос, а value отличает ответы -->
+      <label for="q1">Веб-разработка</label> <!-- Подпись к первой галочке -->
+      <input type="checkbox" id="q2" name="interest" value="design"> <!-- Вторая галочка того же вопроса -->
+      <label for="q2">Дизайн</label> <!-- Подпись ко второй галочке -->
+      <input type="checkbox" id="q3" name="interest" value="data"> <!-- Третья галочка того же вопроса -->
+      <label for="q3">Базы данных</label> <!-- Подпись к третьей галочке -->
+    </div>
+
+    <div class="field options"> <!-- Блок согласия -->
+      <input type="checkbox" id="agree" name="agree" required> <!-- 16. Галочка согласия. required - без неё форму отправить нельзя -->
+      <label for="agree">Согласен на обработку и хранение персональных данных*</label> <!-- Подпись к галочке согласия -->
+    </div>
+
+    <div class="buttons"> <!-- Блок, в котором две кнопки стоят в ряд -->
+      <input type="submit" value="Отправить"> <!-- 17. submit - кнопка отправки формы на сервер (по адресу из action). value - надпись на кнопке -->
+      <input type="reset" value="Очистить"> <!-- 18. reset - кнопка, которая очищает все поля формы -->
+    </div>
+
+  </form> <!-- Конец формы -->
+</body> <!-- Конец тела страницы -->
+</html> <!-- Конец страницы -->
